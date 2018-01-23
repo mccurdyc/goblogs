@@ -66,7 +66,7 @@ or `curl` in another window in your terminal. For our example, the URL that we w
 You should see a response similar to the following displayed in your terminal.
 
 ```
-$ curl localhost:8080
+$ curl localhost:8080/hello
 ```
 
 Response:
@@ -98,7 +98,7 @@ $ ./bin/hello
 
 In another window:
 ```
-$ curl localhost:8080
+$ curl localhost:8080/hello
 ```
 
 Response:
@@ -143,24 +143,20 @@ to differentiate between Dockerfiles throughout this tutorial --- are as follows
 ```
 FROM golang:1.9
 
-RUN mkdir /app
+CMD cd $GOPATH
 
-ADD . /app
+RUN go get github.com/mccurdyc/goblogs/docker-multi-stage-builds/hello
 
-WORKDIR /app
+WORKDIR $GOPATH/src/github.com/mccurdyc/goblogs/docker-multi-stage-builds/hello
 
 ENTRYPOINT ["go", "run", "main.go"]
 ```
 
-When a Dockerfile is present in the current directory and named `Dockerfile`, simply
-running `docker build .` will build an image. However, since we have named our Dockerfile
-something other than `Dockerfile`, we will need to explicitly provide the path to
-it using the `-f` flag. Additionally, we will tag our image `stockx/hello` with the `-t` flag,
-to make it easier to find in a long list of images. Putting that all together,
-the command to build the first image in this post is as follows:
+When a Dockerfile is present in the current directory, the following
+command will build a Docker image tagged as `stockx/hello`:
 
 ```
-$ docker build -f Dockerfile_1 -t stockx/hello .
+$ docker build --rm -f Dockerfile_1 -t stockx/hello .
 ```
 
 Output:
@@ -205,21 +201,24 @@ a Docker image and container, the high-level concept is that a container is a ru
 instance of an image. To start a container, use the following command:
 
 ```
-$ docker run stockx/hello
+$ docker run -p 8080:8080 stockx/hello
 ```
 
 Output:
 ```
+2018/01/23 02:12:01 started server on localhost:8080
 ```
 
 Now, to see the running container, use the following command:
 
 ```
-docker ps
+$ docker ps
 ```
 
 Output:
 ```
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES
+4492d4f94465        stockx/hello        "go run main.go /bin…"   1 second ago        Up 3 seconds        0.0.0.0:8080->8080/tcp   romantic_neumann
 ```
 
 ### Building a Lightweight Image
@@ -236,9 +235,9 @@ Linux, so we can use the command from above:
 $ GOOS=linux GOARCH=amd64 go build -o bin/hello .
 ```
 
-And let's update our Dockerfile to use Alpine Linux as the base image and copy the
-Go binary to our container and run the binary instead of invoking Go. Now, our
-Dockerfile looks like the following:
+And let's use `Dockerfile_2` with Alpine Linux as the base image and copy the
+Go binary to our container and run the binary instead of invoking Go. Our
+`Dockerfile_2` contains the following:
 
 ```
 FROM alpine:latest
@@ -250,56 +249,19 @@ ADD /bin/hello /app
 WORKDIR /app
 
 ENTRYPOINT ["/app/hello"]
+```
+
+```
+$ docker build --rm -f Dockerfile_2 -t stockx/hello .
 ```
 
 Now, if we run `docker images` and look at the size of the image, it is significantly
-smaller, over 700MB smaller. It is now approximately 11MB instead of the previous 734MB.
-
-### Exposing the Container Port to Our Local Machine
-
-Although our application is now running in the container, we can only access it
-from within the container. This is not particularly useful, what we need to do
-is expose the server port so that it can be accessed outside of the container.
-In order to to expose the port that our server is running on in the container
-to our local machine, we must add a line to our Dockerfile explicitly exposing it.
-
-```
-EXPOSE 8080
-```
-
-Now, our Dockerfile looks like this:
-
-```
-FROM alpine:latest
-
-RUN mkdir /app
-
-ADD /bin/hello /app
-
-WORKDIR /app
-
-EXPOSE 8080
-
-ENTRYPOINT ["/app/hello"]
-```
-
-Let's build and start our container again with the following:
-
-```
-$ docker build -t stockx/hello .
-$ docker run stockx/hello
-```
-
-This time if we list the running containers  we should see that our container port 8080
-is mapped to our localhost port 8080, meaning that if
-we make a request to `localhost:8080`, we are actually interacting with our container.
-
-```
-$ docker ps
-```
+smaller, over 700MB smaller. It is now approximately 10MB instead of the previous 730MB.
 
 Output:
 ```
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+750208ddc2b4        stockx/hello        "/app/hello"        Less than a second ago   Up 1 second         0.0.0.0:8080->8080/tcp   cocky_shannon
 ```
 
 ## Difficulty Using 3rd-Party Libraries
@@ -347,9 +309,48 @@ ADD bin/hello /app
 
 COPY --from=prelim /go/bin/soda bin/
 
-EXPOSE 8080
-
 ENTRYPOINT ["/app/hello"]
+```
+
+Running our server will behave the same, but what we are interested in is that the
+`soda` binary is accessible in the container. To check this, `exec` into the running
+container with the following command:
+
+```
+docker exec -it CONTAINER_ID /bin/sh
+```
+
+Once in the container, ensure that the binary that we added to `/bin` is accessible
+by running `./bin/soda`. If everything works out as expected, you should see something
+like the following:
+
+Output:
+```
+v3.51.1
+
+A tasty treat for all your database needs
+
+Usage:
+  soda [flags]
+  soda [command]
+
+Available Commands:
+  create      Creates databases for you
+  drop        Drops databases for you
+  generate
+  help        Help about any command
+  migrate     Runs migrations against your database.
+  schema      Tools for working with your database schema
+
+Flags:
+  -c, --config string   The configuration file you would like to use.
+  -d, --debug           Use debug/verbose mode
+  -e, --env string      The environment you want to run migrations against. Will use $GO_ENV if set. (default "development")
+  -h, --help            help for soda
+  -p, --path string     Path to the migrations folder (default "./migrations")
+  -v, --version         Show version information
+
+Use "soda [command] --help" for more information about a command.
 ```
 
 - Colton J. McCurdy (@McCurdyColton), Clayton Northey (@claythegreat11), Ofiliojo Ichaba (@Ofiliojo)
