@@ -1,0 +1,19 @@
+FROM golang:alpine AS prelim
+
+RUN mkdir /app
+
+RUN apk add --no-cache git build-base
+
+RUN go get github.com/markbates/pop/...
+RUN GOOS=linux GOARCH=amd64 \
+	go build -o /go/bin/soda github.com/markbates/pop/soda
+
+FROM alpine:latest
+
+RUN mkdir /app
+
+ADD bin/hello /app
+
+COPY --from=prelim /go/bin/soda bin/
+
+ENTRYPOINT ["/app/hello"]

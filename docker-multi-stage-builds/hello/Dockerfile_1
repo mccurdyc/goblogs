@@ -2,6 +2,8 @@ FROM golang:1.9
 
 CMD cd $GOPATH
 
-CMD go get -u github.com/mccurdyc/goblogs/docker-multi-stage-builds/hello
+RUN go get github.com/mccurdyc/goblogs/docker-multi-stage-builds/hello
 
 WORKDIR $GOPATH/src/github.com/mccurdyc/goblogs/docker-multi-stage-builds/hello
+
+ENTRYPOINT ["go", "run", "main.go"]
