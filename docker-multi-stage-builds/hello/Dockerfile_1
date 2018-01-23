@@ -1,0 +1,7 @@
+FROM golang:1.9
+
+CMD cd $GOPATH
+
+CMD go get -u github.com/mccurdyc/goblogs/docker-multi-stage-builds/hello
+
+WORKDIR $GOPATH/src/github.com/mccurdyc/goblogs/docker-multi-stage-builds/hello
