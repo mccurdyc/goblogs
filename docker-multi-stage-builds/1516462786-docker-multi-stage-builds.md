@@ -1,4 +1,6 @@
 # Containerizing Go and a Use Case for Multi-Stage Docker Builds
+###### Colton J. McCurdy (@McCurdyColton), Clayton Northey (@claythegreat11), Ofiliojo Ichaba (@Ofiliojo)
+---
 
 ## Wide Adoption of Go in the Service-Oriented Architecture at StockX
 
@@ -191,14 +193,15 @@ REPOSITORY                            TAG                 IMAGE ID            CR
 stockx/hello                          latest              49b293df7e71        9 hours ago         734MB
 ```
 
-Note that the size of the image will be approximately 730MB. We will use this number
+Note that the size of the image is around 730MB. We will use this number
 as a point of comparison later, so keep it in mind.
 
 ### What is the Difference Between a Docker Image and a Container?
 
 While this post will not go into detail on the topic of the differences between
 a Docker image and container, the high-level concept is that a container is a running
-instance of an image. To start a container, use the following command:
+instance of an image. To start a container and map the container ports to your
+local machine, use the following command:
 
 ```
 $ docker run -p 8080:8080 stockx/hello
@@ -256,7 +259,24 @@ $ docker build --rm -f Dockerfile_2 -t stockx/hello .
 ```
 
 Now, if we run `docker images` and look at the size of the image, it is significantly
-smaller, over 700MB smaller. It is now approximately 10MB instead of the previous 730MB.
+smaller, over 700MB smaller. It is now around 10MB instead of the previous 730MB.
+
+Output:
+```
+REPOSITORY                            TAG                 IMAGE ID            CREATED             SIZE
+stockx/hello        latest              a585021da814        Less than a second ago   10.7MB
+```
+
+Again, to start the container and once started, list the running containers, use the following
+commands, respectively:
+
+```
+$ docker run -p 8080:8080 stockx/hello
+```
+
+```
+$ docker ps
+```
 
 Output:
 ```
@@ -313,7 +333,8 @@ ENTRYPOINT ["/app/hello"]
 ```
 
 Running our server will behave the same, but what we are interested in is that the
-`soda` binary is accessible in the container. To check this, `exec` into the running
+`soda` binary is accessible in the container. For the proceeding command, you will
+need to grab the `CONTAINER_ID` from `docker ps`. To check this, `exec` into the running
 container with the following command:
 
 ```
@@ -352,7 +373,3 @@ Flags:
 
 Use "soda [command] --help" for more information about a command.
 ```
-
-- Colton J. McCurdy (@McCurdyColton), Clayton Northey (@claythegreat11), Ofiliojo Ichaba (@Ofiliojo)
-
-
