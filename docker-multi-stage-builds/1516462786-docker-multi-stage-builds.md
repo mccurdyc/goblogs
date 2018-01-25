@@ -2,40 +2,36 @@
 ###### Colton J. McCurdy (@McCurdyColton), Clayton Northey (@claythegreat11), Ofiliojo Ichaba (@Ofiliojo)
 ---
 
-## Wide Adoption of Go in the Service-Oriented Architecture at StockX
+## Adoption of Go in the Service-Oriented Architecture at StockX
 
-At StockX, we have followed the industry in that we have a service-oriented, or
-microservice, architecture. A microservice architecture is an architecture style
-where each service has a very specific task, e.g., providing product
-information, generating shipping labels, calculating pricing information, etc..
-The suite of smaller services, often communicating over HTTP, constitute the
-application as a whole.
-While this post does allude to the architecture style at StockX, it will not discuss
-the details about service-oriented architectures, a post that does, is written by Martin Fowler,
-titled ["Microservices: a definition of this new architectural term"](https://martinfowler.com/articles/microservices.html).
+StockX is built on a service-oriented, or
+microservice architecture. Microservice architecture is a system design paradigm
+in which a application system is made up of smaller services, each performing specific task e.g., providing product
+information, generating shipping labels, calculating pricing information, etc.
+This suite of smaller services, often communicating over HTTP, constitute the
+application.
+While this post alludes to the architecture at StockX, we will not be discussing
+in detail, the concept of service-oriented architectures. A post by Martin Fowler,
+titled ["Microservices: a definition of this new architectural term"](https://martinfowler.com/articles/microservices.html) already does this sufficiently.
 
-A majority of the backend services at StockX are currently written in Golang, or just
-Go, with a strong recommendation that new services also be written in Go, unless
-there is a rational reason not to. One reason why we chose to adopt Go for many
+Most of the backend services at StockX are currently written in Golang (or just
+Go), with a strong recommendation that any new services also be written in Go, unless
+there is a rational reason to do otherwise. We chose to adopt Go for many
 of our services at StockX
-was because of its ease of use and focus on simplicity, while also providing
-performance benefits over other languages for building
-servers. The choice to adopt Go as our primary backend language was not without
-industry influence.
-
-In an official Go Blog post titled, ["Eight Years of Go"](https://blog.golang.org/8years),
+because it focuses on simplicity, while also providing
+performance benefits over server-side languages. That being said, the choice to adopt Go as our primary language was not without
+industry influence. An official Go Blog post titled, ["Eight Years of Go"](https://blog.golang.org/8years) referenced
 analyst Donnie Berkholz's [post](http://redmonk.com/dberkholz/2014/03/18/go-the-emerging-language-of-cloud-infrastructure/)
-deeming Go "the emerging language of cloud infrastructure" is referenced. In
-Berkholz's post, he uses commit data from an Ohloh data set which contains information
-about more than 600,000 free and open-source software (FOSS) projects.
+deeming Go "the emerging language of cloud infrastructure". In
+Berkholz's post, he uses commit data from an [Ohloh](https://www.openhub.net/p/ohloh) data set which contains information
+about more than 600,000 free and open-source software (FOSS) projects to support his claim.
 
-One of the larger (9,227,099 lines of code (LOC) according to [OpenHub](https://www.openhub.net/p/docker/analyses/latest/languages_summary)),
-well-known open-source projects using Go is Docker. 83.3% or 7,846,057 LOC are written
-in Go according to OpenHub, where the project is broken down by language. According
-to Docker, they are the "world's leading containerization platform." Containerization is a way to
+One of the larger (9,227,099 lines of code (LOC) According to [OpenHub](https://www.openhub.net/p/docker/analyses/latest/languages_summary)),
+well-known open-source Go Projects is Docker. According
+to Docker, they are the "world's leading containerization platform." amd StockX uses Docker to containerize our services. Containerization is a way to
 house an application and its dependencies so that the application can be run on
 a wider range of hosts, yet still behave as intended. Additionally, containerizing
-an application facilitates running that application in the cloud.
+an application facilitates running it in the cloud.
 
 ## Building and Running a Go Service
 
@@ -47,25 +43,24 @@ page on the official website for Go.**
 that needs to be run in your terminal. If this symbol is not present, it will
 most-likely mean it is the response or output from the previous command.
 
-
-Since a Go application's source and dependencies can be compiled into a single,
-static binary, it is easily containerized. The process of building a self-contained
-binary and containerizing a Go application will be demonstrated in this post. The purpose of this
+Since a Go application's source code and dependencies can be compiled into a single,
+static binary, it is easily containerized. This post will demonstrate process of building a self-contained
+binary and containerizing a Go application. The purpose of this
 post is not to discuss how to program in Go, therefore, the application that we
 will be containerizing is
-provided [in this public GitHub repository](https://github.com/mccurdyc/examples).
+provided in this public [GitHub repository](https://github.com/mccurdyc/examples).
 
-If you look through the code, this is a simple server, running on port 8080 by default,
-that will respond with a message "hello".
-This server can be run on your local machine, assuming you have Go installed, with the following command:
+The code is for a simple server, running on port 8080 by default,
+that will respond with the message "hello". You can run this server on your local machine
+(assuming you have Go installed), with the following command:
 
 ```
 $ go run main.go
 ```
 
-To interact with the server that is running, you can use the Unix command, cURL,
-or `curl` in another window in your terminal. For our example, the URL that we will use is `localhost:8080`.
-You should see a response similar to the following displayed in your terminal.
+To interact with the server that is running, you can use the Unix command, [cURL](https://github.com/curl/curl),
+or `curl` in another window of your terminal. For this example, the URL we will use is `localhost:8080`.
+Running the command below in your terminal, you should receive a response.
 
 ```
 $ curl localhost:8080/hello
@@ -80,14 +75,14 @@ hello
 
 However, it is often the case that the application that you are building will be run
 in an environment different than the environment in which it was developed, possibly one where
-Go is not installed. For our application, we can use the Go Toolchain to build a single, static binary with the
+Go is not installed. For this reason, in our application, we can use the Go Toolchain to build a single, static binary with the
 following command in the root of the project:
 
 ```
 $ go build -o bin/hello .
 ```
 
-In the above command, the `-o` flag, which is only allowed when compiling a single package,
+In the command above, the `-o` flag, which is only allowed when compiling a single package,
 forces build to write the resulting executable or object to the named output file,
 instead of the default behavior.
 
@@ -110,13 +105,13 @@ hello
 
 ### Building and Running Go on a Different Operating System
 
-Additionally, if we wanted to build a binary that would be executable on an operating
+To build a binary that would be executable on an operating
 system or processor architecture other than the that of the development environment, we can again leverage the
 Go Toolchain's `build` command, except this time setting two environment variables.
-In this example, we will be build a binary for a system running a security-oriented,
-lightweight distribution of Linux, namely [Alpine](https://alpinelinux.org/). In order
+In this example, we will be build a binary for [Alpine](https://alpinelinux.org/), a system running a security-oriented,
+lightweight distribution of Linux. In order
 to build the binary for this distribution of Linux, we need to set `GOOS=linux` and
-`GOARCH=amd64`. Now, our build command looks as follows:
+`GOARCH=amd64`. Now, our build command is:
 
 ```
 $ GOOS=linux GOARCH=amd64 go build -o bin/hello .
@@ -135,9 +130,9 @@ website.**
 
 ### Building an Image
 
-Building a Docker image can be done through the use of a [Dockerfile](https://docs.docker.com/engine/reference/builder/).
-A Dockerfile is a text document that contains the commands necessary to assemble
-an image, which alternatively could be called on the command line. The `docker build`
+A Docker image can be built using a [Dockerfile](https://docs.docker.com/engine/reference/builder/).
+A Dockerfile is a text file that contains the necessary commands to assemble
+a docker image; an alternative to running the individual commands on the command line. The `docker build`
 command allows users to automate the image build process by executing the commands
 in the Dockerfile. The contents of our Dockerfile --- named `Dockerfile_1` in order
 to differentiate between Dockerfiles throughout this tutorial --- are as follows:
@@ -154,8 +149,7 @@ WORKDIR $GOPATH/src/github.com/mccurdyc/goblogs/docker-multi-stage-builds/hello
 ENTRYPOINT ["go", "run", "main.go"]
 ```
 
-When a Dockerfile is present in the current directory, the following
-command will build a Docker image tagged as `stockx/hello`:
+The following command will build a Docker image tagged as `stockx/hello`:
 
 ```
 $ docker build --rm -f Dockerfile_1 -t stockx/hello .
@@ -193,7 +187,7 @@ REPOSITORY                            TAG                 IMAGE ID            CR
 stockx/hello                          latest              49b293df7e71        9 hours ago         734MB
 ```
 
-Note that the size of the image is around 730MB. We will use this number
+Note that the size of the image is ~730MB. We will use this number
 as a point of comparison later, so keep it in mind.
 
 ### What is the Difference Between a Docker Image and a Container?
@@ -212,7 +206,7 @@ Output:
 2018/01/23 02:12:01 started server on localhost:8080
 ```
 
-Now, to see the running container, use the following command:
+To see the running container, use the following command:
 
 ```
 $ docker ps
@@ -227,20 +221,20 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
 ### Building a Lightweight Image
 
 Currently, we are using the latest Golang image as our base image, this is unnecessarily
-large for what we are trying to do. We can reduce the size of the image significantly by taking
-advantage of Go's ability to be compiled into a single, static binary and run the binary
+large image for what we are trying to do. We can significantly reduce the size of the image by taking
+advantage of Go's ability to be compiled into a single, static binary and run that binary
 on a different distribution of Linux, such as the aforementioned, lightweight Alpine distribution.
 
-First, build the binary for the runtime environment, in this case, it will be Alpine
-Linux, so we can use the command from above:
+To do this, build the runtime environment specific binary, in this case, it will be Alpine
+Linux, so we can use the command from earlier:
 
 ```
 $ GOOS=linux GOARCH=amd64 go build -o bin/hello .
 ```
 
-And let's use `Dockerfile_2` with Alpine Linux as the base image and copy the
-Go binary to our container and run the binary instead of invoking Go. Our
-`Dockerfile_2` contains the following:
+For this build, let's use `Dockerfile_2`, which runs Alpine Linux as the base image, copies the
+Go binary to our container, and runs the binary instead of invoking Go. Our
+`Dockerfile_2` contains the following commands:
 
 ```
 FROM alpine:latest
@@ -254,20 +248,21 @@ WORKDIR /app
 ENTRYPOINT ["/app/hello"]
 ```
 
+Run:
 ```
 $ docker build --rm -f Dockerfile_2 -t stockx/hello .
 ```
 
 Now, if we run `docker images` and look at the size of the image, it is significantly
-smaller, over 700MB smaller. It is now around 10MB instead of the previous 730MB.
+smaller, over 700MB smaller. It is now ~10MB as compared to the previous ~730MB.
 
 Output:
 ```
-REPOSITORY                            TAG                 IMAGE ID            CREATED             SIZE
+REPOSITORY          TAG                 IMAGE ID            CREATED                  SIZE
 stockx/hello        latest              a585021da814        Less than a second ago   10.7MB
 ```
 
-Again, to start the container and once started, list the running containers, use the following
+Again, to start the container, and once started, list the running containers, use the following
 commands, respectively:
 
 ```
@@ -280,34 +275,33 @@ $ docker ps
 
 Output:
 ```
-REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
-750208ddc2b4        stockx/hello        "/app/hello"        Less than a second ago   Up 1 second         0.0.0.0:8080->8080/tcp   cocky_shannon
+REPOSITORY          TAG                 IMAGE ID            CREATED                  SIZE            PORTS                    NAMES
+750208ddc2b4        stockx/hello        "/app/hello"        Less than a second ago   Up 1 second     0.0.0.0:8080->8080/tcp   cocky_shannon
 ```
 
 ## Difficulty Using 3rd-Party Libraries
 
 At StockX, many of our Go services have their own database.
 In an attempt to make working with the database more repeatable and reproducible,
-we use an object-relational-mapping (ORM) library which also includes a migration tool.
-However, the source for the migration tool must also be added to the container if
-we want to actually use it in the container. Really, all that we need is the binary
-for the migration tool in the container. This means that first, we must build the
-binary, but considering that our containers are running a different operating system
-and processor architecture than our development machines, so cross-compiling is necessary.
-An added difficulty, one making simply cross-compiling for the runtime environment
-not so simple is that the migration tool imports C libraries.
+we use an object-relational-mapping (ORM) library that includes a migration tool.
+However, to use this migration tool, the source must also be added to the container.
+Since the source for the migration tool is in Go, all we need is the binary
+for the migration tool in the container. To do this, we need to build the
+binary, but since our containers are running a different operating system
+and processor architecture than our development machines, cross-compiling is necessary.
+An added complexity that makes simply cross-compiling for the runtime environment
+non-trivial, is that the migration tool imports C libraries.
 
-One way to achieve the ability to build and run the migration tool in the container
+One way to successfully to build and run the migration tool in the container
 would be to use the `golang:alpine` base image --- similar to when we first containerized
 our application --- and then run a `go get` and `go install`
-in the container. Again, this is less than ideal because now our container is
-doing much more work than it should have too and it is getting bloated. Another
-way, and ultimately what we identified as the best way to add this migration
-tool was to a [multi-stage docker build](https://docs.docker.com/engine/userguide/eng-image/multistage-build/#before-multi-stage-builds).
-What this allows for is building a preliminary image where you can clutter it
-up as much as you want and then feed data into the next image in the multi-stage build.
+in the container. This is less than ideal because our container is
+doing more work than it should have too and is getting bloated. An alternative that we
+ultimately identified as the best way to add this migration tool was to implement a [multi-stage docker build](https://docs.docker.com/engine/userguide/eng-image/multistage-build/#before-multi-stage-builds).
+What this allows us to build a preliminary image that can be as bloated as we need it
+be and then feed data from that into a smaller image.
 
-To do this, basically all that needs done is to add the contents of two Dockerfiles
+To do this, all that needs done is add the contents of two Dockerfiles
 into a single Dockerfile, like so:
 
 ```
@@ -333,17 +327,17 @@ ENTRYPOINT ["/app/hello"]
 ```
 
 Running our server will behave the same, but what we are interested in is that the
-`soda` binary is accessible in the container. For the proceeding command, you will
-need to grab the `CONTAINER_ID` from `docker ps`. To check this, `exec` into the running
-container with the following command:
+`soda` binary is accessible in the container. . To check this, `exec` into the running
+container with the following command (For the following command, you will
+need to grab the `<CONTAINER_ID>` from the `docker ps` command):
 
 ```
-docker exec -it CONTAINER_ID /bin/sh
+docker exec -it <CONTAINER_ID> /bin/sh
 ```
 
 Once in the container, ensure that the binary that we added to `/bin` is accessible
 by running `./bin/soda`. If everything works out as expected, you should see something
-like the following:
+similar to the following:
 
 Output:
 ```
