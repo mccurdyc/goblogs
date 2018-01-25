@@ -1,27 +1,19 @@
-# Containerizing Go and a Use Case for Multi-Stage Docker Builds
+# Containerizing Go and a Use Case for Multi-Stage Docker Builds with markbates/pop
 ###### Colton J. McCurdy (@McCurdyColton), Clayton Northey (@claythegreat11), Ofiliojo Ichaba (@Ofiliojo)
 ---
 
 ## Wide Adoption of Go in the Service-Oriented Architecture at StockX
 
-At StockX, we have followed the industry in that we have a service-oriented, or
-microservice, architecture. A microservice architecture is an architecture style
-where each service has a very specific task, e.g., providing product
-information, generating shipping labels, calculating pricing information, etc..
-The suite of smaller services, often communicating over HTTP, constitute the
-application as a whole.
+At StockX, have adopted a widely used architecture for our system known as a microservice architecture. A microservice architecture is an architecture style where many small programs (microservices) each have a small set of dedicated tasks and work together to form a larger system.
 While this post does allude to the architecture style at StockX, it will not discuss
 the details about service-oriented architectures, a post that does, is written by Martin Fowler,
 titled ["Microservices: a definition of this new architectural term"](https://martinfowler.com/articles/microservices.html).
 
 A majority of the backend services at StockX are currently written in Golang, or just
 Go, with a strong recommendation that new services also be written in Go, unless
-there is a rational reason not to. One reason why we chose to adopt Go for many
-of our services at StockX
-was because of its ease of use and focus on simplicity, while also providing
-performance benefits over other languages for building
-servers. The choice to adopt Go as our primary backend language was not without
-industry influence.
+there is a strong rational reason not to. One reason why we chose to adopt Go for many
+of our services at StockX was due to its ease of use and focus on simplicity, while also providing
+performance benefits over other languages for implementing web servers. The choice to adopt Go as our primary backend language was not without industry influence.
 
 In an official Go Blog post titled, ["Eight Years of Go"](https://blog.golang.org/8years),
 analyst Donnie Berkholz's [post](http://redmonk.com/dberkholz/2014/03/18/go-the-emerging-language-of-cloud-infrastructure/)
@@ -319,7 +311,7 @@ RUN apk add --no-cache git build-base
 
 RUN go get github.com/markbates/pop/...
 RUN GOOS=linux GOARCH=amd64 \
-	go build -o /go/bin/soda github.com/markbates/pop/soda
+  go build -o /go/bin/soda github.com/markbates/pop/soda
 
 FROM alpine:latest
 
@@ -338,7 +330,7 @@ need to grab the `CONTAINER_ID` from `docker ps`. To check this, `exec` into the
 container with the following command:
 
 ```
-docker exec -it CONTAINER_ID /bin/sh
+$ docker exec -it CONTAINER_ID /bin/sh
 ```
 
 Once in the container, ensure that the binary that we added to `/bin` is accessible
@@ -347,6 +339,8 @@ like the following:
 
 Output:
 ```
+$ soda
+
 v3.51.1
 
 A tasty treat for all your database needs
