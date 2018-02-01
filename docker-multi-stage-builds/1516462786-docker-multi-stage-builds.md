@@ -1,4 +1,4 @@
-Containerizing Go and a Use Case for Multi-Stage Docker Builds
+# Containerizing Go and a Use Case for Multi-Stage Docker Builds
 ###### Colton J. McCurdy (@McCurdyColton), Clayton Northey (@claythegreat11), Ofiliojo Ichaba (@Ofiliojo)
 ---
 
